@@ -46,7 +46,6 @@ public class ShakespeareTranslator implements ExternalGetter<Translation> {
         }
         var entity = new HttpEntity<>(Map.of("text", toTranslate), headers);
         try {
-
             var response = restTemplate.exchange(ENDPOINT, POST, entity, ShakespeareResponse.class);
             return response.hasBody() ? Optional.of(response.getBody().getTranslation()) : Optional.empty();
         } catch (RestClientException ex) {

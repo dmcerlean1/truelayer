@@ -19,7 +19,8 @@ public class PokemonController {
     Pokemon getShakespearean(@PathVariable("name") String pokemonName) {
         Pokemon pokemon = pokemonGetter.get(pokemonName)
                 .orElseThrow(PokemonNotFound::new);
-        Translation translatedDescription = translator.get(pokemon.getDescription()).orElseThrow();
+        Translation translatedDescription = translator.get(pokemon.getDescription())
+                .orElseThrow(TranslationFailed::new);
         return new Pokemon(pokemonName, translatedDescription.getTranslated());
     }
 }
