@@ -2,6 +2,7 @@ package com.truelayer.techtest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
@@ -13,10 +14,13 @@ import java.util.Optional;
  * Class to retrieve a Pokemon using the PokeApi
  */
 @Service
-public class PokemonGetter {
+public class PokemonGetter implements ExternalGetter<Pokemon> {
 
-    Logger logger = LoggerFactory.getLogger(PokemonGetter.class);
+    private static final Logger logger = LoggerFactory.getLogger(PokemonGetter.class);
 
+    /**
+     * This one is hardcoded as it doesn't require an API key
+     */
     private static final String pokeApi = "https://pokeapi.co/api/v2/pokemon-species/%s";
 
     private final RestTemplate restTemplate;

@@ -3,8 +3,7 @@ package com.truelayer.techtest;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import java.util.Objects;
+import org.apache.logging.log4j.util.Strings;
 
 /**
  * Data class which holds "Flavor text" i.e. a description of a pokemon in a particular flavor.
@@ -22,6 +21,10 @@ public class FlavorText {
     }
 
     public String getFlavorText() {
+        if(Strings.isNotBlank(flavorText))
+        {
+            return flavorText.replaceAll("\n", " ");
+        }
         return flavorText;
     }
 

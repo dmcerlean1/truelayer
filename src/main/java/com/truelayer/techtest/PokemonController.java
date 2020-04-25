@@ -7,14 +7,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class PokemonController {
 
-    private final PokemonGetter pokemonGetter;
+    private final ExternalGetter<Pokemon> pokemonGetter;
+    private final ExternalGetter<Translation> translator;
 
-    public PokemonController(PokemonGetter pokemonGetter){
+    public PokemonController(PokemonGetter pokemonGetter, ShakespeareTranslator translator){
         this.pokemonGetter = pokemonGetter;
+        this.translator = translator;
     }
 
     @GetMapping("/pokemon/{name}")
     Pokemon getShakespearean(@PathVariable("name") String pokemonName) {
-        return pokemonGetter.get(pokemonName).get();
+        Pokemon pokemon = pokemonGetter.get(pokemonName)
+                .orElseThrow(PokemonNotFound::new);
+        Translation translatedDescription = translator.get(pokemon.getDescription()).orElseThrow();
+        return new Pokemon(pokemonName, translatedDescription.getTranslated());
     }
 }

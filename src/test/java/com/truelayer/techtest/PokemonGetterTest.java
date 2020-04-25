@@ -4,8 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.core.StringContains;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureMockRestServiceServer;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -19,9 +18,12 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
-@SpringBootTest
-@AutoConfigureMockRestServiceServer
-public class PokemonGetterTest {
+@RestClientTest(PokemonGetter.class)
+class PokemonGetterTest {
+
+    String POKEMON_NAME = "Charizard";
+    String POKEMON_DESC = "The pokemon description";
+    String ENDPOINT = "pokeapi.co/api/v2/pokemon-species/";
 
     @Autowired
     PokemonGetter pokemonGetter;
@@ -32,14 +34,11 @@ public class PokemonGetterTest {
     @Autowired
     ObjectMapper objectMapper;
 
-    private static final String POKEMON_NAME = "Charizard";
-    private static final String POKEMON_DESC = "The pokemon description";
-
     @Test
     public void get_whenPokemonExists_returnPokemon() throws Exception {
         var flavorText = new FlavorTextEntries(
                 List.of(new FlavorText(POKEMON_DESC, new Language("en"))));
-        server.expect(requestTo(StringContains.containsString("pokeapi.co/api/v2/pokemon-species/")))
+        server.expect(requestTo(StringContains.containsString(ENDPOINT)))
                 .andRespond(withSuccess(objectMapper.writeValueAsString(flavorText), MediaType.APPLICATION_JSON));
 
         var returnedPokemon = pokemonGetter.get(POKEMON_NAME);
@@ -47,8 +46,8 @@ public class PokemonGetterTest {
     }
 
     @Test
-    public void get_whenResponseIsNull_returnEmptyOptional() throws Exception {
-        server.expect(requestTo(StringContains.containsString("pokeapi.co/api/v2/pokemon-species/")))
+    public void get_whenResponseIsNull_returnEmptyOptional() {
+        server.expect(requestTo(StringContains.containsString(ENDPOINT)))
                 .andRespond(withStatus(HttpStatus.NO_CONTENT));
 
         var returnedPokemon = pokemonGetter.get(POKEMON_NAME);
@@ -56,8 +55,8 @@ public class PokemonGetterTest {
     }
 
     @Test
-    public void get_whenPokemonDoesntExist_returnEmptyOptional() throws Exception {
-        server.expect(requestTo(StringContains.containsString("pokeapi.co/api/v2/pokemon-species/")))
+    public void get_whenPokemonDoesntExist_returnEmptyOptional() {
+        server.expect(requestTo(StringContains.containsString(ENDPOINT)))
                 .andRespond(withStatus(HttpStatus.NOT_FOUND));
 
         var returnedPokemon = pokemonGetter.get(POKEMON_NAME);
@@ -68,7 +67,7 @@ public class PokemonGetterTest {
     public void get_whenLanguageIsNotEnglish_returnEmptyOptional() throws Exception {
         var flavorText = new FlavorTextEntries(
                 List.of(new FlavorText(POKEMON_DESC, new Language("ja"))));
-        server.expect(requestTo(StringContains.containsString("pokeapi.co/api/v2/pokemon-species/")))
+        server.expect(requestTo(StringContains.containsString(ENDPOINT)))
                 .andRespond(withSuccess(objectMapper.writeValueAsString(flavorText), MediaType.APPLICATION_JSON));
 
         var returnedPokemon = pokemonGetter.get(POKEMON_NAME);
