@@ -10,8 +10,7 @@ import javax.annotation.Resource;
  */
 @Resource
 public class ShakespeareApi {
-    @Value("${shakespeare-api-key}")
-    @NonNull
+    @Value("${shakespeare-api-key:#{null}}")
     private String apiKey;
 
     public String getApiKey() {
